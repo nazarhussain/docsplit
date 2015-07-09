@@ -13,7 +13,7 @@ It wraps GraphicsMagick, Poppler, PDFTK, and JODConverter.
 Usage:
   docsplit COMMAND [OPTIONS] path/to/doc.pdf
   Main commands:
-    pages, images, text, pdf.
+    pages, split, images, text, pdf.
   Metadata commands:
     author, date, creator, keywords, producer, subject, title, length.
 
@@ -42,6 +42,7 @@ Options:
       begin
         case @command
         when :images  then Docsplit.extract_images(ARGV, @options)
+        when :split   then Docsplit.split_pages(ARGV, @options)
         when :pages   then Docsplit.extract_pages(ARGV, @options)
         when :text    then Docsplit.extract_text(ARGV, @options)
         when :pdf     then Docsplit.extract_pdf(ARGV, @options)

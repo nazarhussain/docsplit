@@ -5,23 +5,14 @@ module Docsplit
   class PageExtractor
 
     # Burst a list of pdfs into single pages, as `pdfname_pagenumber.pdf`.
-    def extract(pdfs, opts)
+    def extract(pdf, opts)
       extract_options opts
-      [pdfs].flatten.each do |pdf|
-        pdf_name = File.basename(pdf, File.extname(pdf))
-        page_path = ESCAPE[File.join(@output, "#{pdf_name}")] + "_%d.pdf"
-        FileUtils.mkdir_p @output unless File.exists?(@output)
-        
-        cmd = if DEPENDENCIES[:pdftailor] # prefer pdftailor, but keep pdftk for backwards compatability
-          "pdftailor unstitch --output #{page_path} #{ESCAPE[pdf]} 2>&1"
-        else
-          "pdftk #{ESCAPE[pdf]} burst output #{page_path} 2>&1"
-        end
-        result = `#{cmd}`.chomp
-        FileUtils.rm('doc_data.txt') if File.exists?('doc_data.txt')
-        raise ExtractionFailed, result if $? != 0
-        result
-      end
+      output_path = ESCAPE[@output]
+      cmd = "pdftk #{ESCAPE[pdf.first]} cat #{@pages} output #{output_path} 2>&1"
+      result = `#{cmd}`.chomp
+      FileUtils.rm('doc_data.txt') if File.exists?('doc_data.txt')
+      raise ExtractionFailed, result if $? != 0
+      result
     end
 
 
@@ -29,6 +20,7 @@ module Docsplit
 
     def extract_options(options)
       @output = options[:output] || '.'
+      @pages = options[:pages].join(' ') || '1'
     end
 
   end

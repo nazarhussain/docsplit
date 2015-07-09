@@ -40,6 +40,12 @@ module Docsplit
   # broke.
   class ExtractionFailed < StandardError; end
 
+  # Use the SplitPages Java class to burst a PDF into single pages.
+  def self.split_pages(pdfs, opts={})
+    pdfs = ensure_pdfs(pdfs)
+    PageSplitter.new.split(pdfs, opts)
+  end
+
   # Use the ExtractPages Java class to burst a PDF into single pages.
   def self.extract_pages(pdfs, opts={})
     pdfs = ensure_pdfs(pdfs)
